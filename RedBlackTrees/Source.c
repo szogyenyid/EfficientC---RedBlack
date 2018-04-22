@@ -145,7 +145,7 @@ void traversal(struct rbtNode* root){
 		printf("root is %d-- %c", root->key, root->color);
 		printf("\nInorder tree traversal\n");
 		inorderTree(root);
-		printf("\npostorder tree traversal\n");
+		printf("\nPostorder tree traversal\n");
 		postorderTree(root);
 	}
 	else printf("This tree is empty!");
@@ -160,11 +160,11 @@ int search(int val){
 		if (diff > 0) temp = temp->right;
 		else if (diff < 0) temp = temp->left;
 		else{
-			printf("Element Found!!\n");
+			printf("Element found!\n");
 			return 1;
 		}
 	}
-	printf("Given Data Not Found in RB Tree!!\n");
+	printf("Given data is not found in tree\n");
 	return 0;
 }
 
@@ -253,7 +253,7 @@ struct rbtNode* delete(int var){
 	z = root;
 	if ((z->left == NULL) && (z->right == NULL) && (z->key == var)){
 		root = NULL;
-		printf("\nRBTREE is empty\n");
+		printf("\nTree is empty.\n");
 		return;
 	}
 
@@ -279,21 +279,21 @@ struct rbtNode* delete(int var){
 int main(){
 	int choice, val, data, var, fl = 0;
 	while (1) {
-		printf("\nRed Black Tree Management\nEnter your choice:\n1:Insert\n2:Delete\n3:Search\n4:Traversal\n5:Exit\n");
+		printf("\nRed-Black Tree Management\nEnter your choice:\n1:Insert\n2:Delete\n3:Search\n4:Traversal\n5:Exit\n");
 		scanf("%d", &choice);
 		switch (choice) {
 		case 1:
-			printf("Enter the integer you want to add : ");
+			printf("Enter the int you wanna add: ");
 			scanf("%d", &val);
 			insert(val);
 			break;
 		case 2:
-			printf("Enter the integer you want to delete : ");
+			printf("Enter the int you wanna delete: ");
 			scanf("%d", &var);
 			delete(var);
 			break;
 		case 3:
-			printf("Enter search element \n");
+			printf("Enter int to search: \n");
 			scanf("%d", &val);
 			search(val);
 			break;
