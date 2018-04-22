@@ -13,7 +13,8 @@ struct rbtNode* root = NULL;
 void leftRotate(struct rbtNode *x){
 	struct rbtNode *y;
 
-	y = x->right;  x->right = y->left;
+	y = x->right;
+	x->right = y->left;
 	if (y->left != NULL) y->left->parent = x;
 	y->parent = x->parent;
 
@@ -26,14 +27,16 @@ void leftRotate(struct rbtNode *x){
 void rightRotate(struct rbtNode *y) {
 	struct rbtNode *x;
 
-	x = y->left; y->left = x->right;
+	x = y->left;
+	y->left = x->right;
 	if (x->right != NULL) x->right->parent = y;
 	x->parent = y->parent;
 
 	if (y->parent == NULL) root = x;
 	else if ((y->parent->left != NULL) && (y->key == y->parent->left->key)) y->parent->left = x;
 	else y->parent->right = x;
-	x->right = y; y->parent = x;
+	x->right = y;
+	y->parent = x;
 }
 
 void colorInsert(struct rbtNode *z){
@@ -123,10 +126,9 @@ void inorderTree(struct rbtNode* root){
 
 	if (temp != NULL){
 		inorderTree(temp->left);
-		printf(" %d--%c ", temp->key, temp->color);
+		printf(" %d%c ", temp->key, temp->color);
 		inorderTree(temp->right);
 	}
-	else printf("This tree is empty!");
 }
 
 void postorderTree(struct rbtNode* root){
@@ -135,9 +137,8 @@ void postorderTree(struct rbtNode* root){
 	if (temp != NULL){
 		postorderTree(temp->left);
 		postorderTree(temp->right);
-		printf(" %d--%c ", temp->key, temp->color);
+		printf(" %d%c ", temp->key, temp->color);
 	}
-	else printf("This tree is empty!");
 }
 
 void traversal(struct rbtNode* root){
