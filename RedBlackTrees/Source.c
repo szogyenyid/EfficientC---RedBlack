@@ -119,7 +119,7 @@ void insert(int val){
 		if (z->key < y->key) y->left = z;
 		else y->right = z;
 	}
-	colorInsert(z);
+colorInsert(z);
 }
 
 void inorderTree(struct rbtNode* root){
