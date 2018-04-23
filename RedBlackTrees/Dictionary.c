@@ -5,7 +5,9 @@
 
 typedef struct DictNode {
 	char sajatNyelv[32];
-	char idegenNyelv[32];
+	char idegenNyelv1[32];
+	char idegenNyelv2[32];
+	char idegenNyelv3[32];
 	char color;
 	struct DictNode *left, *right, *parent;
 }DictNode;
