@@ -103,6 +103,7 @@ void insert(int val){
 	if (root == NULL){
 		root = z;
 		root->color = 'b';
+		z->parent = NULL;
 		return;
 	}
 
@@ -143,10 +144,10 @@ void postorderTree(struct rbtNode* root){
 
 void traversal(struct rbtNode* root){
 	if (root != NULL){
-		printf("root is %d-- %c", root->key, root->color);
-		printf("\nInorder tree traversal\n");
+		printf("root is %d%c", root->key, root->color);
+		printf("\nInorder tree traversal:\n");
 		inorderTree(root);
-		printf("\nPostorder tree traversal\n");
+		printf("\nPostorder tree traversal:\n");
 		postorderTree(root);
 	}
 	else printf("This tree is empty!");
