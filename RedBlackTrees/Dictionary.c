@@ -112,8 +112,11 @@ void insert(char newSajat[32], char newIdegen[32]) {
 	struct DictNode *b = NULL; //y = b
 	struct DictNode *c = (DictNode*)malloc(sizeof(DictNode)); //z = c
 
-	*c->sajatNyelv = newSajat;
-	*c->idegenNyelv1 = newIdegen;
+	for (int i = 0; i < 32; i++) {
+		c->sajatNyelv[i] = newSajat[i];
+		c->idegenNyelv1[i] = newIdegen[i];
+	}
+
 	c->left = NULL;
 	c->right = NULL;
 	c->color = 'r';
@@ -154,7 +157,7 @@ void inorderTree(DictNode* root) {
 
 	if (temp != NULL) {
 		inorderTree(temp->left);
-		printf(" %d%c ", temp->sajatNyelv, temp->color);
+		printf(" %s-%c ", temp->sajatNyelv, temp->color);
 		inorderTree(temp->right);
 	}
 }
@@ -164,6 +167,87 @@ void postorderTree(DictNode* root) {
 	if (temp != NULL) {
 		postorderTree(temp->left);
 		postorderTree(temp->right);
-		printf(" %d%c ", temp->sajatNyelv, temp->color);
+		printf(" %s-%c ", temp->sajatNyelv, temp->color);
 	}
+}
+
+void traversal(DictNode* root) {
+	if (root != NULL) {
+		printf("A gyoker: %s-%c", root->sajatNyelv, root->color);
+		printf("\nInorder bejaras:\n");
+		inorderTree(root);
+		printf("\nPostorder bejaras:\n");
+		postorderTree(root);
+	}
+	else printf("A szotarad ures!");
+}
+
+int search(char word[32]){
+	DictNode* temp = root;
+
+	while (temp != NULL){
+		if (isGreater(word, temp->sajatNyelv)) temp = temp->right;
+		else if (isLess(word, temp->sajatNyelv)) temp = temp->left;
+		else{
+			//printf("Megvan!\n");
+			return 1;
+		}
+	}
+	printf("A keresett szo nem talalhato a szotarban.\n");
+	return 0;
+}
+DictNode* minim(DictNode *a) {
+	while (a->left) a = a->left;
+	return a;
+}
+DictNode* successor(DictNode *a){ //leszarmazott
+	DictNode *b;
+	if (a->right) return minim(a->right);
+	b = a->parent;
+	while (b && a == b->right) {
+		a = b;
+		b = b->parent;
+	}
+	return b;
+}
+
+int main() {
+	int choice, var, fl = 0;
+	char sajat[32], idegen[32];
+	while (1) {
+		printf("\nSzotar program\nValasztasod:\n1:Beszuras\n2:Torles\n3:Kereses\n4:Bejaras\n5:Kilepes\n");
+		scanf("%d", &choice);
+		switch (choice) {
+		case 1:
+			printf("A szo amit hozza akarsz adni [magyar angol]: ");
+			scanf("%s %s", &sajat, &idegen);
+			insert(tolower(sajat), tolower(idegen));
+			break;
+		case 2:
+			printf("Enter the int you wanna delete: ");
+			scanf("%d", &var);
+			//delete(var);
+			break;
+		case 3:
+			printf("Enter int to search: \n");
+			scanf("%s", &sajat);
+			search(sajat);
+			break;
+
+		case 4:
+			traversal(root);
+			break;
+
+		case 5:
+			fl = 1;
+			break;
+
+		default:
+			printf("\nInvalid Choice\n");
+		}
+
+		if (fl == 1) break;
+	}
+
+	return 0;
 }
