@@ -12,7 +12,7 @@ typedef struct DictNode {
 	struct DictNode *left, *right, *parent;
 }DictNode;
 
-DictNode root = NULL;
+DictNode* root = NULL;
 
 int isEqual(char a[32], char b[32]) {
 	for (int i = 0; i < 32; i++) {
@@ -33,3 +33,31 @@ int isLess(char a[32], char b[32]) {
 	return 0;
 }
 
+void rotateLeft(DictNode* a) {
+	DictNode* b;
+
+	b = a->right;
+	a->right = b->left;
+	if (b->left != NULL) b->left->parent = a;
+	b->parent = a->parent;
+
+	if (a->parent == NULL) root = b;
+	else if ((a->parent->left != NULL) && isEqual(a->sajatNyelv, a->parent->left->sajatNyelv)) a->parent->left = b;
+	else a->parent->right = b;
+	b->left = a;
+	a->parent = b;
+}
+void rotateRight(DictNode* b) {
+	DictNode* a;
+
+	a = b->left;
+	b->left = a->right;
+	if (a->right != NULL) a->right->parent = b;
+	a->parent = b->parent;
+
+	if (b->parent == NULL) root = a;
+	else if ((b->parent->left != NULL) && isEqual(b->sajatNyelv, b->parent->left->sajatNyelv)) b->parent->left = a;
+	else b->parent->right = a;
+	a->right = b;
+	b->parent = a;
+}
