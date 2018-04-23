@@ -107,40 +107,63 @@ void colorInsert(DictNode* c) {
 	}
 	root->color = 'b';
 }
-void insert(char val[32]) {
+void insert(char newSajat[32], char newIdegen[32]) {
 	struct DictNode *a = NULL; //x = a
 	struct DictNode *b = NULL; //y = b
 	struct DictNode *c = (DictNode*)malloc(sizeof(DictNode)); //z = c
 
-	*c->sajatNyelv = val;   //IDE KELLETT BESZURNI EGY CSILLAGOT AZ EGESZ KIFEJEZES ELÉ
+	*c->sajatNyelv = newSajat;
+	*c->idegenNyelv1 = newIdegen;
 	c->left = NULL;
 	c->right = NULL;
 	c->color = 'r';
 	a = root;
 
-	if (search(val) == 1) {
-		printf("\nWord is already in the tree\n");
+	if (search(newSajat) == 1) {
+		printf("\nA beirt szo mar szerepel a szotarban!\n");
+		//PRINT CURRENT MEANING -----------------------------------------------------------------------------------TODO----------------------------------------
+		//INSERT NEW MEANING --------------------------------------------------------------------------------------TODO----------------------------------------
+		//EDIT CURRENT MEANING ------------------------------------------------------------------------------------TODO----------------------------------------
 		return;
 	}
 
 	if (root == NULL) {
-		root = z;
+		root = c;
 		root->color = 'b';
-		z->parent = NULL;
+		c->parent = NULL;
 		return;
 	}
 
-	while (x != NULL) {
-		y = x;
-		if (z->key < x->key) x = x->left;
-		else x = x->right;
+	while (a != NULL) {
+		b = a;
+		if (isLess(c->sajatNyelv, a->sajatNyelv)) a = a->left;
+		else a = a->right;
 	}
 
-	z->parent = y;
-	if (y == NULL) root = z;
+	c->parent = b;
+	if (b == NULL) root = c;
 	else {
-		if (z->key < y->key) y->left = z;
-		else y->right = z;
+		if (isLess(c->sajatNyelv, b->sajatNyelv)) b->left = c;
+		else b->right = c;
 	}
-	colorInsert(z);
+	colorInsert(c);
+}
+
+void inorderTree(DictNode* root) {
+	DictNode* temp = root;
+
+	if (temp != NULL) {
+		inorderTree(temp->left);
+		printf(" %d%c ", temp->sajatNyelv, temp->color);
+		inorderTree(temp->right);
+	}
+}
+void postorderTree(DictNode* root) {
+	DictNode* temp = root;
+
+	if (temp != NULL) {
+		postorderTree(temp->left);
+		postorderTree(temp->right);
+		printf(" %d%c ", temp->sajatNyelv, temp->color);
+	}
 }
