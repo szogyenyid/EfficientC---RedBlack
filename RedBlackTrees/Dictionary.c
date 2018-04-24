@@ -117,6 +117,8 @@ void insert(char newSajat[32], char newIdegen[32]) {
 	for (int i = 0; i < 32; i++) {
 		c->sajatNyelv[i] = newSajat[i];
 		c->idegenNyelv1[i] = newIdegen[i];
+		c->idegenNyelv2[i] = 0;
+		c->idegenNyelv3[i] = 0;
 	}
 
 	c->left = NULL;
@@ -199,7 +201,7 @@ int isinDict(char word[32]){
 void search(char word[32]) {
 	DictNode* temp = root;
 	if (isinDict(word)==1) {
-		while (temp->sajatNyelv != word) {
+		while (!isEqual(temp->sajatNyelv,word)) {
 			if (isGreater(word, temp->sajatNyelv)) temp = temp->right;
 			if (isLess(word, temp->sajatNyelv)) temp = temp->left;
 		}
