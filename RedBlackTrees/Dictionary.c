@@ -135,8 +135,6 @@ void insert(char newSajat[WORDL], char newIdegen[WORDL]) {
 
 	if (isinDict(newSajat) == 1) {
 		printf("\nA beirt szo mar szerepel a szotarban!\n");
-		//PRINT CURRENT MEANING -----------------------------------------------------------------------------------TODO----------------------------------------
-		//INSERT NEW MEANING --------------------------------------------------------------------------------------TODO----------------------------------------
 		if (addMeaning(newSajat, newIdegen)) printf("Uj jelentes hozzaadva.\n");
 		else printf("Nem sikerult a jelentest hozzaadni. :(\n");
 		//EDIT CURRENT MEANING ------------------------------------------------------------------------------------TODO----------------------------------------
