@@ -2,37 +2,44 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h> //tolower miatt
+#define WORDL 32
 
 typedef struct DictNode {
-	char sajatNyelv[32];
-	char idegenNyelv1[32];
-	char idegenNyelv2[32];
-	char idegenNyelv3[32];
+	char sajatNyelv[WORDL];
+	char idegenNyelv1[WORDL];
+	char idegenNyelv2[WORDL];
+	char idegenNyelv3[WORDL];
 	char color;
 	struct DictNode *left, *right, *parent;
 }DictNode;
 
 DictNode* root = NULL;
 
-int isEqual(char a[32], char b[32]) {
-	for (int i = 0; i < 32; i++) {
+int isEqual(char a[WORDL], char b[WORDL]) {
+	for (int i = 0; i < WORDL; i++) {
 		if (a[i] != b[i]) return 0; //ha bármelyik betû nem egyezik, akkor hamis
 	}
 	return 1; //különben igaz
 }
-int isGreater(char a[32], char b[32]) {
-	for (int i = 0; i < 32; i++) {
+int isGreater(char a[WORDL], char b[WORDL]) {
+	for (int i = 0; i < WORDL; i++) {
 		if (a[i] > b[i]) return 1;
 		if (a[i] < b[i]) return 0;
 	}
 	return 0; //különben hamis
 }
-int isLess(char a[32], char b[32]) {
-	for (int i = 0; i < 32; i++) {
+int isLess(char a[WORDL], char b[WORDL]) {
+	for (int i = 0; i < WORDL; i++) {
 		if (a[i] < b[i]) return 1;
 		if (a[i] > b[i]) return 0;
 	}
 	return 0;
+}
+int isEmpty(char a[WORDL]) {
+	for (int i = 0; i < WORDL; i++) {
+		if (a[i] != 0) return 0;
+	}
+	return 1;
 }
 
 void rotateLeft(DictNode* a) {
@@ -109,12 +116,12 @@ void colorInsert(DictNode* c) {
 	}
 	root->color = 'b';
 }
-void insert(char newSajat[32], char newIdegen[32]) {
+void insert(char newSajat[WORDL], char newIdegen[WORDL]) {
 	struct DictNode *a = NULL; //x = a
 	struct DictNode *b = NULL; //y = b
 	struct DictNode *c = (DictNode*)malloc(sizeof(DictNode)); //z = c
 
-	for (int i = 0; i < 32; i++) {
+	for (int i = 0; i < WORDL; i++) {
 		c->sajatNyelv[i] = newSajat[i];
 		c->idegenNyelv1[i] = newIdegen[i];
 		c->idegenNyelv2[i] = 0;
@@ -130,6 +137,8 @@ void insert(char newSajat[32], char newIdegen[32]) {
 		printf("\nA beirt szo mar szerepel a szotarban!\n");
 		//PRINT CURRENT MEANING -----------------------------------------------------------------------------------TODO----------------------------------------
 		//INSERT NEW MEANING --------------------------------------------------------------------------------------TODO----------------------------------------
+		if (addMeaning(newSajat, newIdegen)) printf("Uj jelentes hozzaadva.\n");
+		else printf("Nem sikerult a jelentest hozzaadni. :(\n");
 		//EDIT CURRENT MEANING ------------------------------------------------------------------------------------TODO----------------------------------------
 		return;
 	}
@@ -186,7 +195,7 @@ void traversal(DictNode* root) {
 	else printf("A szotarad ures!");
 }
 
-int isinDict(char word[32]){
+int isinDict(char word[WORDL]){
 	DictNode* temp = root;
 
 	while (temp != NULL) {
@@ -198,7 +207,7 @@ int isinDict(char word[32]){
 	}
 	return 0;
 }
-void search(char word[32]) {
+void search(char word[WORDL]) {
 	DictNode* temp = root;
 	if (isinDict(word)==1) {
 		while (!isEqual(temp->sajatNyelv,word)) {
@@ -208,6 +217,49 @@ void search(char word[32]) {
 		printf("%s: %s, %s, %s", temp->sajatNyelv, temp->idegenNyelv1, temp->idegenNyelv2, temp->idegenNyelv3);
 	}
 	else printf("A keresett szo nincs a szotarban.\n");
+}
+int addMeaning(char sajat[WORDL], char idegen[WORDL]) {
+	DictNode* temp = root;
+
+	if (isinDict(sajat)) {
+		while (temp != NULL) {
+			if (isEqual(temp->sajatNyelv, sajat)) break;
+			else {
+				if (isGreater(sajat, temp->sajatNyelv)) temp = temp->right;
+				else temp = temp->left;
+			}
+		}
+		if ((isEqual(temp->idegenNyelv1, idegen)) || (isEqual(temp->idegenNyelv2, idegen)) || (isEqual(temp->idegenNyelv3, idegen))) printf("A szonak mar bent van ez a jelentese.\n");
+		else {
+			//printf("addMeaning isEqual(1) returns: %d\n", isEqual(temp->idegenNyelv1, ""));
+			if (isEmpty(temp->idegenNyelv1)) {
+				for (int i = 0; i < WORDL; i++) {
+					temp->idegenNyelv1[i] = idegen[i];
+				}
+				return 1;
+			}
+			else {
+				//printf("addMeaning isEqual(2) returns: %d\n", isEqual(temp->idegenNyelv2, ""));
+				if (isEmpty(temp->idegenNyelv2)) {
+					for (int i = 0; i < WORDL; i++) {
+						temp->idegenNyelv2[i] = idegen[i];
+					}
+					return 1;
+				}
+				else {
+					//printf("addMeaning isEqual(3) returns: %d\n", isEqual(temp->idegenNyelv3, ""));
+					if (isEmpty(temp->idegenNyelv3)) {
+						for (int i = 0; i < WORDL; i++) {
+							temp->idegenNyelv3[i] = idegen[i];
+						}
+						return 1;
+					}
+				}
+			}
+		}
+	}
+	else printf("A szo meg nincs bent a szotarban.");
+	return 0;
 }
 
 DictNode* minim(DictNode *a) {
@@ -225,17 +277,17 @@ DictNode* successor(DictNode *a){ //leszarmazott
 	return b;
 }
 
-void wordTest(char test1[32], char test2[32]) {
-	char sajat[32];
-	char idegen[32];
-	for (int i = 0; i < 32; i++) {
+void wordTest(char test1[WORDL], char test2[WORDL]) {
+	char sajat[WORDL];
+	char idegen[WORDL];
+	for (int i = 0; i < WORDL; i++) {
 		sajat[i] = test1[i];
 		idegen[i] = test2[i];
 	}
 	printf("\n%d %d %d", isLess(sajat, idegen), isEqual(sajat, idegen), isGreater(sajat, idegen));
 }
-void toLower(char a[32]) {
-	for (int i = 0; i < 32; i++) {
+void toLower(char a[WORDL]) {
+	for (int i = 0; i < WORDL; i++) {
 		a[i] = tolower(a[i]);
 	}
 }
@@ -243,7 +295,7 @@ void toLower(char a[32]) {
 
 int main() {
 	int choice, var, fl = 0;
-	char sajat[32]="", idegen[32]="";
+	char sajat[WORDL]="", idegen[WORDL]="";
 	while (1) {
 		printf("\nSzotar program\nValasztasod:\n1:Beszuras\n2:Torles\n3:Kereses\n4:Bejaras\n5:Kilepes\n");
 		scanf("%d", &choice);
@@ -280,6 +332,5 @@ int main() {
 
 		if (fl == 1) break;
 	}
-
 	return 0;
 }
