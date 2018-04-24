@@ -4,6 +4,12 @@
 #include <ctype.h> //tolower miatt
 #define WORDL 32
 
+/*TODO:
+- Delete + ColorDelete
+- Modify element
+- Save and restore tree to/from file
+*/
+
 typedef struct DictNode {
 	char sajatNyelv[WORDL];
 	char idegenNyelv1[WORDL];
@@ -275,6 +281,106 @@ DictNode* successor(DictNode *a){ //leszarmazott
 	return b;
 }
 
+void colorDelete(DictNode *a) {
+	while (a != root && a->color == 'b') {
+		DictNode *d = NULL;
+		if ((a->parent->left != NULL) && (a == a->parent->left)) {
+			d = a->parent->right;
+			if ((d != NULL) && (d->color == 'r')) {
+				d->color = 'b';
+				a->parent->color = 'r';
+				rotateLeft(a->parent);
+				d = a->parent->right;
+			}
+
+			if ((d != NULL) && (d->right != NULL) && (d->left != NULL) && (d->left->color == 'b') && (d->right->color == 'b')) {
+				d->color = 'r';
+				a = a->parent;
+			}
+			else if ((d != NULL) && (d->right->color == 'b')) {
+				d->left->color = 'b';
+				d->color = 'r';
+				rotateRight(d);
+				d = a->parent->right;
+			}
+
+			if (d != NULL) {
+				d->color = a->parent->color;
+				a->parent->color = 'b';
+				d->right->color = 'b';
+				rotateLeft(a->parent);
+				a = root;
+			}
+		}
+
+		else if (a->parent != NULL) {
+			d = a->parent->left;
+			if ((d != NULL) && (d->color == 'r')) {
+				d->color = 'b';
+				a->parent->color = 'r';
+				rotateLeft(a->parent);
+				if (a->parent != NULL) d = a->parent->left;
+
+			}
+
+			if ((d != NULL) && (d->right != NULL) && (d->left != NULL) && (d->right->color == 'b') && (d->left->color == 'b')) a = a->parent;
+			else if ((d != NULL) && (d->right != NULL) && (d->left != NULL) && (d->left->color == 'b')) {
+				d->right->color = 'b';
+				d->color = 'r';
+				rotateRight(d);
+				d = a->parent->left;
+			}
+
+			if (a->parent != NULL) {
+				d->color = a->parent->color;
+				a->parent->color = 'b';
+			}
+
+			if (d->left != NULL) d->left->color = 'b';
+			if (a->parent != NULL) rotateLeft(a->parent);
+			a = root;
+		}
+	}
+	a->color = 'b';
+}
+DictNode* delete(char word[WORDL]) {
+	DictNode* a = NULL;
+	DictNode* b = NULL;
+	DictNode* c = root;
+
+	if ((c->left == NULL) && (c->right == NULL) && (isEqual(c->sajatNyelv, word))) {
+		root = NULL;
+		printf("A szotar kiurult.\n");
+		return;
+	}
+
+	while ((!isEqual(c->sajatNyelv, word)) && (c != NULL)) {
+		if (isLess(word, c->sajatNyelv)) c = c->left;
+		else c = c->right;
+		if (c == NULL) return;
+	}
+
+	if ((c->left == NULL) || (c->right == NULL)) b = c;
+	else b = successor(c);
+	if (b->left != NULL) a = b->left;
+	else if (b->right != NULL) a = b->right;
+	if ((a != NULL) && (b->parent != NULL)) a->parent = b->parent;
+	if ((b != NULL) && (a != NULL) && (b->parent == NULL)) root = a;
+	else if (b == b->parent->left) b->parent->left = a;
+	else b->parent->right = a;
+	if (b != c) {
+		for (int i = 0; i < WORDL; i++) {
+			c->sajatNyelv[i] = b->sajatNyelv[i];
+			c->idegenNyelv1[i] = b->idegenNyelv1[i];
+			c->idegenNyelv2[i] = b->idegenNyelv2[i];
+			c->idegenNyelv3[i] = b->idegenNyelv3[i];
+		}
+	}
+	if ((b != NULL) && (a != NULL) && (b->color == 'b')) colorDelete(a);
+	return b;
+}
+
+
 void wordTest(char test1[WORDL], char test2[WORDL]) {
 	char sajat[WORDL];
 	char idegen[WORDL];
@@ -292,9 +398,9 @@ void toLower(char a[WORDL]) {
 
 
 int main() {
-	int choice, var, fl = 0;
+	int choice, var, fl = 1;
 	char sajat[WORDL]="", idegen[WORDL]="";
-	while (1) {
+	while (fl) {
 		printf("\nSzotar program\nValasztasod:\n1:Beszuras\n2:Torles\n3:Kereses\n4:Bejaras\n5:Kilepes\n");
 		scanf("%d", &choice);
 		switch (choice) {
@@ -306,9 +412,9 @@ int main() {
 			insert(sajat, idegen);
 			break;
 		case 2:
-			printf("Enter the int you wanna delete: ");
-			scanf("%d", &var);
-			//delete(var);
+			printf("Enter the word you wanna delete: ");
+			scanf("%s", &sajat);
+			delete(sajat);
 			break;
 		case 3:
 			printf("Enter word to search: \n");
@@ -321,14 +427,12 @@ int main() {
 			break;
 
 		case 5:
-			fl = 1;
+			fl = 0;
 			break;
 
 		default:
 			printf("\nInvalid Choice\n");
 		}
-
-		if (fl == 1) break;
 	}
 	return 0;
 }
