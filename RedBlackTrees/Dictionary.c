@@ -124,7 +124,7 @@ void insert(char newSajat[32], char newIdegen[32]) {
 	c->color = 'r';
 	a = root;
 
-	if (search(newSajat) == 1) {
+	if (isinDict(newSajat) == 1) {
 		printf("\nA beirt szo mar szerepel a szotarban!\n");
 		//PRINT CURRENT MEANING -----------------------------------------------------------------------------------TODO----------------------------------------
 		//INSERT NEW MEANING --------------------------------------------------------------------------------------TODO----------------------------------------
@@ -184,7 +184,7 @@ void traversal(DictNode* root) {
 	else printf("A szotarad ures!");
 }
 
-int search(char word[32]){
+int isinDict(char word[32]){
 	DictNode* temp = root;
 
 	while (temp != NULL){
@@ -195,9 +195,10 @@ int search(char word[32]){
 			return 1;
 		}
 	}
-	printf("A keresett szo nem talalhato a szotarban.\n");
+	//printf("A keresett szo nem talalhato a szotarban.\n");
 	return 0;
 }
+
 DictNode* minim(DictNode *a) {
 	while (a->left) a = a->left;
 	return a;
@@ -222,6 +223,12 @@ void wordTest(char test1[32], char test2[32]) {
 	}
 	printf("\n%d %d %d", isLess(sajat, idegen), isEqual(sajat, idegen), isGreater(sajat, idegen));
 }
+void toLower(char a[32]) {
+	for (int i = 0; i < 32; i++) {
+		a[i] = tolower(a[i]);
+	}
+}
+
 
 int main() {
 	int choice, var, fl = 0;
@@ -233,7 +240,9 @@ int main() {
 		case 1:
 			printf("A szo amit hozza akarsz adni [magyar angol]: ");
 			scanf("%s %s", &sajat, &idegen);
-			insert(tolower(sajat), tolower(idegen));
+			toLower(sajat);
+			toLower(idegen);
+			insert(sajat, idegen);
 			break;
 		case 2:
 			printf("Enter the int you wanna delete: ");
