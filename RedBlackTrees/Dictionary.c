@@ -22,13 +22,15 @@ int isEqual(char a[32], char b[32]) {
 }
 int isGreater(char a[32], char b[32]) {
 	for (int i = 0; i < 32; i++) {
-		if (a[i] > b[i]) return 1; //ha bármelyik betû nagyobb (kihasználjuk hogy C-ben a char egy szám), akkor igaz
+		if (a[i] > b[i]) return 1;
+		if (a[i] < b[i]) return 0;
 	}
 	return 0; //különben hamis
 }
 int isLess(char a[32], char b[32]) {
 	for (int i = 0; i < 32; i++) {
 		if (a[i] < b[i]) return 1;
+		if (a[i] > b[i]) return 0;
 	}
 	return 0;
 }
@@ -209,6 +211,16 @@ DictNode* successor(DictNode *a){ //leszarmazott
 		b = b->parent;
 	}
 	return b;
+}
+
+void wordTest(char test1[32], char test2[32]) {
+	char sajat[32];
+	char idegen[32];
+	for (int i = 0; i < 32; i++) {
+		sajat[i] = test1[i];
+		idegen[i] = test2[i];
+	}
+	printf("\n%d %d %d", isLess(sajat, idegen), isEqual(sajat, idegen), isGreater(sajat, idegen));
 }
 
 int main() {
