@@ -187,16 +187,25 @@ void traversal(DictNode* root) {
 int isinDict(char word[32]){
 	DictNode* temp = root;
 
-	while (temp != NULL){
-		if (isGreater(word, temp->sajatNyelv)) temp = temp->right;
-		else if (isLess(word, temp->sajatNyelv)) temp = temp->left;
-		else{
-			//printf("Megvan!\n");
-			return 1;
+	while (temp != NULL) {
+		if (isEqual(temp->sajatNyelv,word)) return 1;
+		else {
+				if (isGreater(word, temp->sajatNyelv)) temp = temp->right;
+				else temp = temp->left;
 		}
 	}
-	//printf("A keresett szo nem talalhato a szotarban.\n");
 	return 0;
+}
+void search(char word[32]) {
+	DictNode* temp = root;
+	if (isinDict(word)==1) {
+		while (temp->sajatNyelv != word) {
+			if (isGreater(word, temp->sajatNyelv)) temp = temp->right;
+			if (isLess(word, temp->sajatNyelv)) temp = temp->left;
+		}
+		printf("%s: %s, %s, %s", temp->sajatNyelv, temp->idegenNyelv1, temp->idegenNyelv2, temp->idegenNyelv3);
+	}
+	else printf("A keresett szo nincs a szotarban.\n");
 }
 
 DictNode* minim(DictNode *a) {
@@ -232,7 +241,7 @@ void toLower(char a[32]) {
 
 int main() {
 	int choice, var, fl = 0;
-	char sajat[32], idegen[32];
+	char sajat[32]="", idegen[32]="";
 	while (1) {
 		printf("\nSzotar program\nValasztasod:\n1:Beszuras\n2:Torles\n3:Kereses\n4:Bejaras\n5:Kilepes\n");
 		scanf("%d", &choice);
@@ -250,7 +259,7 @@ int main() {
 			//delete(var);
 			break;
 		case 3:
-			printf("Enter int to search: \n");
+			printf("Enter word to search: \n");
 			scanf("%s", &sajat);
 			search(sajat);
 			break;
