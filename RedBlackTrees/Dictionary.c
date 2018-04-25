@@ -202,7 +202,7 @@ void traversal(DictNode* root) {
 		printf("\nPostorder bejaras:\n");
 		postorderTree(root);
 	}
-	else printf("A szotarad ures!");
+	else printf("\nA szotarad ures!\n");
 }
 
 int isinDict(char word[WORDL]){
@@ -356,6 +356,7 @@ DictNode* delete(char word[WORDL]) {
 
 	if ((c->left == NULL) && (c->right == NULL) && (isEqual(c->sajatNyelv, word))) {
 		root = NULL;
+		free(c);
 		printf("A szotar kiurult.\n");
 		return;
 	}
@@ -462,72 +463,29 @@ void toLower(char a[WORDL]) {
 	}
 }
 
-void saveDict2(DictNode* root, FILE* fp) {
+void preorderSave(DictNode* root, FILE* fp) {
 	if (root == NULL) return;
 	fwrite(root, sizeof(DictNode), 1, fp);
-	if (root->left != NULL) saveDict2(root->left, fp);
-	if(root->right != NULL) saveDict2(root->right, fp);
+	if (root->left != NULL) preorderSave(root->left, fp);
+	if (root->right != NULL) preorderSave(root->right, fp);
 }
-
-void inorderSave(DictNode* root, FILE* fp) {
-	DictNode* temp = root;
-	if (temp != NULL) {
-		inorderSave(temp->left, fp);
-		fwrite(root, sizeof(DictNode), 1, fp);
-		inorderSave(temp->right, fp);
-	}
-}
-void inorderLoad(DictNode** root, FILE* fp) {
-
-}
-
-
-void loadDict(DictNode** root, FILE* fp) {
+DictNode* preorderLoad(DictNode** root, FILE* fp) { // root = preorderLoad(root, fp);
 	if (root == NULL) { //ha semmi nem fogja a gyökeret
 		printf("KURVA NAGY HIBA TORTENIK EPPEN!");
 		return;
 	}
-	else {
-		if ((*root) == NULL) { //ha a gyökér nem üres
-			DictNode* temp = malloc(sizeof(DictNode)); //lefoglalunk egy DictNode-nyi helyet
-			fread(temp, sizeof(DictNode), 1, fp); //beolvassuk az elsõ node-ot
-			*root = temp;
-			copyNode((*root), temp);
-			(*root)->left = NULL;
-			(*root)->right = NULL;
-			(*root)->parent = root;
-		}
-		//most már el tudjuk kezdeni feltölteni a fát
-		while (1) {
-			DictNode* temp = malloc(sizeof(DictNode));
-			fread(temp, sizeof(DictNode), 1, fp);
-			if (temp->color != 'r') {
-				if (temp->color != 'b') break;
-			}
-			(*root)->left = temp;
-			copyNode((*root)->left, temp);
-			(*root)->left->left = NULL;
-			(*root)->left->right = NULL;
-			(*root)->left->parent = (*root);
-
-			loadDict(&(*root)->left, fp);
-		}
-		while (1) {
-			DictNode* temp2 = malloc(sizeof(DictNode));
-			fread(temp2, sizeof(DictNode), 1, fp);
-			if (temp2->color != 'r') {
-				if (temp2->color != 'b') break;
-			}
-			(*root)->right = temp2;
-			copyNode((*root)->right, temp2);
-			(*root)->right->left = NULL;
-			(*root)->right->right = NULL;
-			(*root)->right->parent = (*root);
-
-			loadDict(&(*root)->right, fp);
-		}
-		}
+	DictNode* temp = malloc(sizeof(DictNode));
+	fread(temp, sizeof(DictNode), 1, fp); //tempbe került minden;		helyes: color, sajatNyelv, idegenNyelv-ek;		helytelen: parent, left, right;
+	if (temp->left != NULL) {
+		temp->left->parent = temp;
+		temp->left = preorderLoad(temp->left, fp);
 	}
+	if (temp->right != NULL) {
+		temp->right->parent = temp;
+		temp->right = preorderLoad(temp->right, fp);
+	}
+	return temp;
+}
 
 
 int main() {
@@ -579,7 +537,7 @@ int main() {
 	insert("lyuk", "hole");
 	traversal(root);
 	FILE* fp = fopen("wordtree.dict", "wb");
-	inorderSave(root, fp);
+	preorderSave(root, fp);
 	fclose(fp);
 	delete("lyuk");
 	delete("pina");
@@ -591,8 +549,9 @@ int main() {
 	delete("kaki");
 	traversal(root);
 	fp = fopen("wordtree.dict", "rb");
-	loadDict(&root, fp);
-	colorInsert(root);
+	//loadDict(&root, fp);
+	root = preorderLoad(&root, fp);
+	//colorInsert(root);
 	traversal(root);
 	fclose(fp);
 	return 0;
