@@ -448,21 +448,6 @@ int editMeaning(int nth, char word[WORDL], char newm[WORDL]) {
 	}
 }
 
-void wordTest(char test1[WORDL], char test2[WORDL]) {
-	char sajat[WORDL];
-	char idegen[WORDL];
-	for (int i = 0; i < WORDL; i++) {
-		sajat[i] = test1[i];
-		idegen[i] = test2[i];
-	}
-	printf("\n%d %d %d", isLess(sajat, idegen), isEqual(sajat, idegen), isGreater(sajat, idegen));
-}
-void toLower(char a[WORDL]) {
-	for (int i = 0; i < WORDL; i++) {
-		a[i] = tolower(a[i]);
-	}
-}
-
 void preorderSave(DictNode* root, FILE* fp) {
 	if (root == NULL) return;
 	fwrite(root, sizeof(DictNode), 1, fp);
@@ -487,6 +472,47 @@ DictNode* preorderLoad(DictNode** root, FILE* fp) { // root = preorderLoad(root,
 	return temp;
 }
 
+void treeTest() {
+	insert("kaki", "poop");
+	insert("kutya", "dog");
+	insert("ablak", "window");
+	insert("ajto", "door");
+	insert("narancs", "orange");
+	insert("lo", "horse");
+	insert("level", "letter");
+	insert("lyuk", "hole");
+	traversal(root);
+	FILE* fp = fopen("wordtree.dict", "wb");
+	preorderSave(root, fp);
+	fclose(fp);
+	delete("lyuk");
+	delete("kutya");
+	delete("ablak");
+	delete("ajto");
+	delete("level");
+	delete("lo");
+	delete("narancs");
+	delete("kaki");
+	traversal(root);
+	fp = fopen("wordtree.dict", "rb");
+	root = preorderLoad(&root, fp);
+	traversal(root);
+	fclose(fp);
+}
+void wordTest(char test1[WORDL], char test2[WORDL]) {
+	char sajat[WORDL];
+	char idegen[WORDL];
+	for (int i = 0; i < WORDL; i++) {
+		sajat[i] = test1[i];
+		idegen[i] = test2[i];
+	}
+	printf("\n%d %d %d", isLess(sajat, idegen), isEqual(sajat, idegen), isGreater(sajat, idegen));
+}
+void toLower(char a[WORDL]) {
+	for (int i = 0; i < WORDL; i++) {
+		a[i] = tolower(a[i]);
+	}
+}
 
 int main() {
 	int choice, var, fl = 1;
@@ -526,33 +552,6 @@ int main() {
 		}
 	}
 
-	//printf("%d", sizeof(DictNode));
-	insert("kaki", "poop");
-	insert("pina", "cunt");
-	insert("ablak", "window");
-	insert("ajto", "door");
-	insert("segg", "ass");
-	insert("lo", "horse");
-	insert("ondo", "semen");
-	insert("lyuk", "hole");
-	traversal(root);
-	FILE* fp = fopen("wordtree.dict", "wb");
-	preorderSave(root, fp);
-	fclose(fp);
-	delete("lyuk");
-	delete("pina");
-	delete("ablak");
-	delete("ajto");
-	delete("segg");
-	delete("lo");
-	delete("ondo");
-	delete("kaki");
-	traversal(root);
-	fp = fopen("wordtree.dict", "rb");
-	//loadDict(&root, fp);
-	root = preorderLoad(&root, fp);
-	//colorInsert(root);
-	traversal(root);
-	fclose(fp);
+	treeTest();
 	return 0;
 }
