@@ -469,16 +469,15 @@ void saveDict2(DictNode* root, FILE* fp) {
 	if(root->right != NULL) saveDict2(root->right, fp);
 }
 
-void saveDict(DictNode* root, FILE* fp) {
-	if (root != NULL) {
+void inorderSave(DictNode* root, FILE* fp) {
+	DictNode* temp = root;
+	if (temp != NULL) {
+		inorderSave(temp->left, fp);
 		fwrite(root, sizeof(DictNode), 1, fp);
+		inorderSave(temp->right, fp);
 	}
 }
-
-void inorderSave(DictNode* root, FILE* fp) {
-
-}
-void inorderLoad() {
+void inorderLoad(DictNode** root, FILE* fp) {
 
 }
 
@@ -531,7 +530,6 @@ void loadDict(DictNode** root, FILE* fp) {
 	}
 
 
-
 int main() {
 	int choice, var, fl = 1;
 	char sajat[WORDL]="", idegen[WORDL]="";
@@ -581,7 +579,7 @@ int main() {
 	insert("lyuk", "hole");
 	traversal(root);
 	FILE* fp = fopen("wordtree.dict", "wb");
-	saveDict2(root, fp);
+	inorderSave(root, fp);
 	fclose(fp);
 	delete("lyuk");
 	delete("pina");
