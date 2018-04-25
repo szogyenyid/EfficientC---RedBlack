@@ -45,6 +45,15 @@ int isEmpty(char a[WORDL]) {
 	}
 	return 1;
 }
+void copyNode(DictNode* dest, DictNode* src) {
+	for (int i = 0; i < WORDL; i++) {
+		dest->sajatNyelv[i] = src->sajatNyelv[i];
+		dest->idegenNyelv1[i] = src->idegenNyelv1[i];
+		dest->idegenNyelv2[i] = src->idegenNyelv2[i];
+		dest->idegenNyelv3[i] = src->idegenNyelv3[i];
+	}
+	dest->color = src->color;
+}
 
 void rotateLeft(DictNode* a) {
 	DictNode* b;
@@ -141,7 +150,6 @@ void insert(char newSajat[WORDL], char newIdegen[WORDL]) {
 		printf("\nA beirt szo mar szerepel a szotarban!\n");
 		if (addMeaning(newSajat, newIdegen)) printf("Uj jelentes hozzaadva.\n");
 		else printf("Nem sikerult a jelentest hozzaadni. :(\n");
-		//EDIT CURRENT MEANING ------------------------------------------------------------------------------------TODO----------------------------------------
 		return;
 	}
 
@@ -454,54 +462,65 @@ void toLower(char a[WORDL]) {
 	}
 }
 
+void saveDict2(DictNode* root, FILE* fp) {
+	if (root == NULL) return;
+	fwrite(root, sizeof(DictNode), 1, fp);
+	if (root->left != NULL) saveDict2(root->left, fp);
+	if(root->right != NULL) saveDict2(root->right, fp);
+}
+
 void saveDict(DictNode* root, FILE* fp) {
 	if (root != NULL) {
 		fwrite(root, sizeof(DictNode), 1, fp);
-		for (int i = 0; i < 2; i++) {
-			if (i == 0) saveDict(root->left, fp);
-			else saveDict(root->right, fp);
-		}
-	}
-}
-//void loadDict(DictNode** root, FILE* fp) {
-//	if (root == NULL) {
-//		DictNode* temp = malloc(sizeof(DictNode));
-//		fread(temp, sizeof(DictNode), 1, fp);
-//		root = temp;
-//	}
-//	else {
-//		*root = malloc(sizeof(DictNode));
-//		fread(*root, sizeof(DictNode), 1, fp);
-//		for (int i = 0; i < 2; i++) {
-//			if ((*root)->left) {
-//				if (i == 0) loadDict((*root)->left, fp);
-//				else loadDict((*root)->right, fp);
-//			}
-//		}
-//	}
-//}
-void loadDict(DictNode** root, FILE*fp) {
-	if (*root == NULL) {
-		DictNode* temp = malloc(sizeof(DictNode));
-		fread(temp, sizeof(DictNode), 1, fp);
-		*root = temp;
-	}
-	else {
-		for (int i = 0; i < 2; i++) {
-			DictNode* temp = malloc(sizeof(DictNode));
-			fread(temp, sizeof(DictNode), 1, fp);
-			if (i==0) {
-				(*root)->left = temp;
-				if(temp->left!=NULL) loadDict((*root)->left, fp);
-			}
-			else {
-				(*root)->right = temp;
-				if (temp->right != NULL) loadDict((*root)->right, fp);
-			}
-		}
 	}
 }
 
+void loadDict(DictNode** root, FILE* fp) {
+	if (root == NULL) { //ha semmi nem fogja a gyökeret
+		printf("KURVA NAGY HIBA TORTENIK EPPEN!");
+		return;
+	}
+	else {
+		if ((*root) == NULL) { //ha a gyökér nem üres
+			DictNode* temp = malloc(sizeof(DictNode)); //lefoglalunk egy DictNode-nyi helyet
+			fread(temp, sizeof(DictNode), 1, fp); //beolvassuk az elsõ node-ot
+			*root = temp;
+			copyNode((*root), temp);
+			(*root)->left = NULL;
+			(*root)->right = NULL;
+			(*root)->parent = root;
+		}
+		//most már el tudjuk kezdeni feltölteni a fát
+		while (1) {
+			DictNode* temp = malloc(sizeof(DictNode));
+			fread(temp, sizeof(DictNode), 1, fp);
+			if (temp->color != 'r') {
+				if (temp->color != 'b') break;
+			}
+			(*root)->left = temp;
+			copyNode((*root)->left, temp);
+			(*root)->left->left = NULL;
+			(*root)->left->right = NULL;
+			(*root)->left->parent = (*root);
+
+			loadDict(&(*root)->left, fp);
+		}
+		while (1) {
+			DictNode* temp2 = malloc(sizeof(DictNode));
+			fread(temp2, sizeof(DictNode), 1, fp);
+			if (temp2->color != 'r') {
+				if (temp2->color != 'b') break;
+			}
+			(*root)->right = temp2;
+			copyNode((*root)->right, temp2);
+			(*root)->right->left = NULL;
+			(*root)->right->right = NULL;
+			(*root)->right->parent = (*root);
+
+			loadDict(&(*root)->right, fp);
+		}
+		}
+	}
 
 
 
@@ -543,6 +562,7 @@ int main() {
 		}
 	}
 
+	//printf("%d", sizeof(DictNode));
 	insert("kaki", "poop");
 	insert("pina", "cunt");
 	insert("ablak", "window");
@@ -553,7 +573,7 @@ int main() {
 	insert("lyuk", "hole");
 	traversal(root);
 	FILE* fp = fopen("wordtree.dict", "wb");
-	saveDict(root, fp);
+	saveDict2(root, fp);
 	fclose(fp);
 	delete("lyuk");
 	delete("pina");
@@ -566,6 +586,7 @@ int main() {
 	traversal(root);
 	fp = fopen("wordtree.dict", "rb");
 	loadDict(&root, fp);
+	colorInsert(root);
 	traversal(root);
 	fclose(fp);
 	return 0;
