@@ -5,7 +5,6 @@
 #define WORDL 32
 
 /*TODO:
-- Delete + ColorDelete
 - Modify element
 - Save and restore tree to/from file
 */
@@ -380,6 +379,71 @@ DictNode* delete(char word[WORDL]) {
 	return b;
 }
 
+void modifyWord(char word[WORDL]) {
+	/*
+	-megkeressük a szót és kiírjuk
+	-megkérdezzük hogy mit akar (módosít/töröl)
+	-ha módosít, megkérdezzük hogy hányadik jelentést is mire
+	*/
+	search(word);
+	printf("\n1: Uj jelentes hozzaadasa\n2: Jelentes modositasa\n3: Jelentes torlese\n4: Szo torlese\n");
+	int choice;
+	int num;
+	char newm[WORDL];
+	scanf("%d", &choice);
+	switch (choice) {
+	case 1:
+		printf("Ird ide az uj jelentest: ");
+		scanf("%s", &newm);
+		addMeaning(word, newm);
+		break;
+	case 2:
+		printf("Melyik jelentest szeretned modositani? [1-2-3]\n");
+		scanf("%d", &num);
+		if (num > 3) {
+			printf("Sajnos haromnal tobb jelentest nem tudok tarolni :(\n");
+			break;
+		}
+		printf("Mi legyen az uj jelentes?\n");
+		scanf("%s", &newm);
+		editMeaning(num, word, newm);
+		break;
+	case 3:
+		printf("Melyik jelentest szeretned torolni? [1-2-3]\n");
+		scanf("%d", &num);
+		if (num > 3) {
+			printf("Sajnos haromnal tobb jelentest nem tudok tarolni :(\n");
+			break;
+		}
+		editMeaning(num, word, "");
+		break;
+	case 4:
+		delete(word);
+		printf("Szo torolve.");
+		break;
+	default:
+		printf("Nem tudom hogy mire gondolsz :(");
+	}
+}
+int editMeaning(int nth, char word[WORDL], char newm[WORDL]) {
+	DictNode* temp = root;
+	if (isinDict(word)) {
+		while (!isEqual(temp->sajatNyelv, word)) {
+			if (isLess(word, temp->sajatNyelv)) temp = temp->left;
+			else temp = temp->right;
+		}
+		for (int i = 0; i < WORDL; i++) {
+			if (nth == 1) temp->idegenNyelv1[i] = newm[i];
+			if (nth == 2) temp->idegenNyelv2[i] = newm[i];
+			if (nth == 3) temp->idegenNyelv3[i] = newm[i];
+		}
+	}
+	else printf("A szo nem szerepel a szotarban.");
+	if ((isEmpty(temp->idegenNyelv1) && (isEmpty(temp->idegenNyelv2)) && (isEmpty(temp->idegenNyelv3)))) {
+		delete(word);
+		printf("A szo osszes jelentese elfogyott, igy toroltem.");
+	}
+}
 
 void wordTest(char test1[WORDL], char test2[WORDL]) {
 	char sajat[WORDL];
@@ -401,7 +465,7 @@ int main() {
 	int choice, var, fl = 1;
 	char sajat[WORDL]="", idegen[WORDL]="";
 	while (fl) {
-		printf("\nSzotar program\nValasztasod:\n1:Beszuras\n2:Torles\n3:Kereses\n4:Bejaras\n5:Kilepes\n");
+		printf("\nSzotar program\nValasztasod:\n1:Beszuras\n2:Kereses\n3:Bejaras\n4:Modositas\n5:Kilepes\n");
 		scanf("%d", &choice);
 		switch (choice) {
 		case 1:
@@ -412,24 +476,24 @@ int main() {
 			insert(sajat, idegen);
 			break;
 		case 2:
-			printf("Enter the word you wanna delete: ");
-			scanf("%s", &sajat);
-			delete(sajat);
-			break;
-		case 3:
 			printf("Enter word to search: \n");
 			scanf("%s", &sajat);
 			search(sajat);
 			break;
 
-		case 4:
+		case 3:
 			traversal(root);
+			break;
+
+		case 4:
+			printf("Enter word to modify: ");
+			scanf("%s", &sajat);
+			modifyWord(sajat);
 			break;
 
 		case 5:
 			fl = 0;
 			break;
-
 		default:
 			printf("\nInvalid Choice\n");
 		}
