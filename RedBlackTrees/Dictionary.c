@@ -121,9 +121,9 @@ void colorInsert(DictNode* c) {
 	root->color = 'b';
 }
 void insert(char newSajat[WORDL], char newIdegen[WORDL]) {
-	struct DictNode *a = NULL; //x = a
-	struct DictNode *b = NULL; //y = b
-	struct DictNode *c = (DictNode*)malloc(sizeof(DictNode)); //z = c
+	DictNode *a = NULL;
+	DictNode *b = NULL;
+	DictNode *c = (DictNode*)malloc(sizeof(DictNode));
 
 	for (int i = 0; i < WORDL; i++) {
 		c->sajatNyelv[i] = newSajat[i];
@@ -463,16 +463,45 @@ void saveDict(DictNode* root, FILE* fp) {
 		}
 	}
 }
-void loadDict(DictNode** root, FILE* fp) {
-	*root = malloc(sizeof(DictNode));
-	fread(*root, sizeof(DictNode), 1, fp);
-	for (int i = 0; i < 2; i++) {
-		if ((*root)->left) {
-			if(i==0) loadDict((*root)->left, fp);
-			else loadDict((*root)->right, fp);
+//void loadDict(DictNode** root, FILE* fp) {
+//	if (root == NULL) {
+//		DictNode* temp = malloc(sizeof(DictNode));
+//		fread(temp, sizeof(DictNode), 1, fp);
+//		root = temp;
+//	}
+//	else {
+//		*root = malloc(sizeof(DictNode));
+//		fread(*root, sizeof(DictNode), 1, fp);
+//		for (int i = 0; i < 2; i++) {
+//			if ((*root)->left) {
+//				if (i == 0) loadDict((*root)->left, fp);
+//				else loadDict((*root)->right, fp);
+//			}
+//		}
+//	}
+//}
+void loadDict(DictNode** root, FILE*fp) {
+	if (*root == NULL) {
+		DictNode* temp = malloc(sizeof(DictNode));
+		fread(temp, sizeof(DictNode), 1, fp);
+		*root = temp;
+	}
+	else {
+		for (int i = 0; i < 2; i++) {
+			DictNode* temp = malloc(sizeof(DictNode));
+			fread(temp, sizeof(DictNode), 1, fp);
+			if (i==0) {
+				(*root)->left = temp;
+				if(temp->left!=NULL) loadDict((*root)->left, fp);
+			}
+			else {
+				(*root)->right = temp;
+				if (temp->right != NULL) loadDict((*root)->right, fp);
+			}
 		}
 	}
 }
+
 
 
 
@@ -515,7 +544,6 @@ int main() {
 	}
 
 	insert("kaki", "poop");
-	insert("punci", "pussy");
 	insert("pina", "cunt");
 	insert("ablak", "window");
 	insert("ajto", "door");
@@ -528,7 +556,6 @@ int main() {
 	saveDict(root, fp);
 	fclose(fp);
 	delete("lyuk");
-	delete("punci");
 	delete("pina");
 	delete("ablak");
 	delete("ajto");
@@ -538,7 +565,7 @@ int main() {
 	delete("kaki");
 	traversal(root);
 	fp = fopen("wordtree.dict", "rb");
-	loadDict(root, fp);
+	loadDict(&root, fp);
 	traversal(root);
 	fclose(fp);
 	return 0;
