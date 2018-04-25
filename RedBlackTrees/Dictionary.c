@@ -5,7 +5,8 @@
 #define WORDL 32
 
 /*TODO:
-- Save and restore tree to/from file
+- Beautify user interface (right and protocolar \n and \t usage);
+- Add save and load to menu;
 */
 
 typedef struct DictNode {
