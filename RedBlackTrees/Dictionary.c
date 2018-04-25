@@ -475,6 +475,14 @@ void saveDict(DictNode* root, FILE* fp) {
 	}
 }
 
+void inorderSave(DictNode* root, FILE* fp) {
+
+}
+void inorderLoad() {
+
+}
+
+
 void loadDict(DictNode** root, FILE* fp) {
 	if (root == NULL) { //ha semmi nem fogja a gyökeret
 		printf("KURVA NAGY HIBA TORTENIK EPPEN!");
