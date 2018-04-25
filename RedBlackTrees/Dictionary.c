@@ -515,43 +515,43 @@ void toLower(char a[WORDL]) {
 }
 
 int main() {
-	int choice, var, fl = 1;
-	char sajat[WORDL]="", idegen[WORDL]="";
-	while (0) {
-		printf("\nSzotar program\nValasztasod:\n1:Beszuras\n2:Kereses\n3:Bejaras\n4:Modositas\n5:Kilepes\n");
+	int choice, running = 1;
+	char sajat[WORDL] = "" , idegen[WORDL] = "";
+	while (running) {
+		printf("\t1-Beszuras\t2-Kereses\t3-Modositas\t4-Kilepes\n\t");
 		scanf("%d", &choice);
 		switch (choice) {
 		case 1:
-			printf("A szo amit hozza akarsz adni [magyar angol]: ");
+			printf("\nA szo amit hozza akarsz adni [magyar angol]: ");
 			scanf("%s %s", &sajat, &idegen);
 			toLower(sajat);
 			toLower(idegen);
 			insert(sajat, idegen);
 			break;
 		case 2:
-			printf("Enter word to search: \n");
+			printf("\nKeresendo szo [magyar]: ");
 			scanf("%s", &sajat);
+			toLower(sajat);
 			search(sajat);
 			break;
-
 		case 3:
-			traversal(root);
-			break;
-
-		case 4:
-			printf("Enter word to modify: ");
+			printf("\nModositando szo [magyar]: ");
 			scanf("%s", &sajat);
+			toLower(sajat);
 			modifyWord(sajat);
 			break;
-
+		case 4:
+			running = 0;
+			break;
 		case 5:
-			fl = 0;
+			traversal(root);
 			break;
 		default:
-			printf("\nInvalid Choice\n");
+			printf("\nInvalid choice :/");
+			break;
 		}
 	}
 
-	treeTest();
+	//treeTest();
 	return 0;
 }
