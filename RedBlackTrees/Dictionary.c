@@ -15,7 +15,7 @@ typedef struct DictNode {
 	char idegenNyelv3[WORDL];
 	char color;
 	struct DictNode *left, *right, *parent;
-}DictNode, *DctNdPtr;
+}DictNode;
 
 DictNode* root = NULL;
 
@@ -454,7 +454,7 @@ void toLower(char a[WORDL]) {
 	}
 }
 
-void saveDict(DctNdPtr root, FILE* fp) {
+void saveDict(DictNode* root, FILE* fp) {
 	if (root != NULL) {
 		fwrite(root, sizeof(DictNode), 1, fp);
 		for (int i = 0; i < 2; i++) {
@@ -463,7 +463,7 @@ void saveDict(DctNdPtr root, FILE* fp) {
 		}
 	}
 }
-void loadDict(DctNdPtr* root, FILE* fp) {
+void loadDict(DictNode** root, FILE* fp) {
 	*root = malloc(sizeof(DictNode));
 	fread(*root, sizeof(DictNode), 1, fp);
 	for (int i = 0; i < 2; i++) {
@@ -538,7 +538,7 @@ int main() {
 	delete("kaki");
 	traversal(root);
 	fp = fopen("wordtree.dict", "rb");
-	loadDict(&root, fp);
+	loadDict(root, fp);
 	traversal(root);
 	fclose(fp);
 	return 0;
