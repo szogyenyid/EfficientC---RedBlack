@@ -5,7 +5,6 @@
 #define WORDL 32
 
 /*TODO:
-- Modify element
 - Save and restore tree to/from file
 */
 
@@ -380,11 +379,6 @@ DictNode* delete(char word[WORDL]) {
 }
 
 void modifyWord(char word[WORDL]) {
-	/*
-	-megkeressük a szót és kiírjuk
-	-megkérdezzük hogy mit akar (módosít/töröl)
-	-ha módosít, megkérdezzük hogy hányadik jelentést is mire
-	*/
 	search(word);
 	printf("\n1: Uj jelentes hozzaadasa\n2: Jelentes modositasa\n3: Jelentes torlese\n4: Szo torlese\n");
 	int choice;
