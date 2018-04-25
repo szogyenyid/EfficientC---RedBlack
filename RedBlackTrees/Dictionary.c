@@ -15,7 +15,7 @@ typedef struct DictNode {
 	char idegenNyelv3[WORDL];
 	char color;
 	struct DictNode *left, *right, *parent;
-}DictNode;
+}DictNode, *DctNdPtr;
 
 DictNode* root = NULL;
 
@@ -454,11 +454,32 @@ void toLower(char a[WORDL]) {
 	}
 }
 
+void saveDict(DctNdPtr root, FILE* fp) {
+	if (root != NULL) {
+		fwrite(root, sizeof(DictNode), 1, fp);
+		for (int i = 0; i < 2; i++) {
+			if (i == 0) saveDict(root->left, fp);
+			else saveDict(root->right, fp);
+		}
+	}
+}
+void loadDict(DctNdPtr* root, FILE* fp) {
+	*root = malloc(sizeof(DictNode));
+	fread(*root, sizeof(DictNode), 1, fp);
+	for (int i = 0; i < 2; i++) {
+		if ((*root)->left) {
+			if(i==0) loadDict((*root)->left, fp);
+			else loadDict((*root)->right, fp);
+		}
+	}
+}
+
+
 
 int main() {
 	int choice, var, fl = 1;
 	char sajat[WORDL]="", idegen[WORDL]="";
-	while (fl) {
+	while (0) {
 		printf("\nSzotar program\nValasztasod:\n1:Beszuras\n2:Kereses\n3:Bejaras\n4:Modositas\n5:Kilepes\n");
 		scanf("%d", &choice);
 		switch (choice) {
@@ -492,5 +513,33 @@ int main() {
 			printf("\nInvalid Choice\n");
 		}
 	}
+
+	insert("kaki", "poop");
+	insert("punci", "pussy");
+	insert("pina", "cunt");
+	insert("ablak", "window");
+	insert("ajto", "door");
+	insert("segg", "ass");
+	insert("lo", "horse");
+	insert("ondo", "semen");
+	insert("lyuk", "hole");
+	traversal(root);
+	FILE* fp = fopen("wordtree.dict", "wb");
+	saveDict(root, fp);
+	fclose(fp);
+	delete("lyuk");
+	delete("punci");
+	delete("pina");
+	delete("ablak");
+	delete("ajto");
+	delete("segg");
+	delete("lo");
+	delete("ondo");
+	delete("kaki");
+	traversal(root);
+	fp = fopen("wordtree.dict", "rb");
+	loadDict(&root, fp);
+	traversal(root);
+	fclose(fp);
 	return 0;
 }
