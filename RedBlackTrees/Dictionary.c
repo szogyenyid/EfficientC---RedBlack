@@ -392,7 +392,7 @@ DictNode* delete(char word[WORDL]) {
 void modifyWord(char word[WORDL]) {
 	search(word);
 	if (isinDict(word)) {
-		printf("\n1: Uj jelentes hozzaadasa\n2: Jelentes modositasa\n3: Jelentes torlese\n4: Szo torlese\n");
+		printf("\n1: Uj jelentes hozzaadasa\n2: Jelentes modositasa\n3: Jelentes torlese\n4: Szo torlese\n5: Megse\n");
 		int choice;
 		int num;
 		char newm[WORDL];
@@ -413,6 +413,7 @@ void modifyWord(char word[WORDL]) {
 			printf("Mi legyen az uj jelentes?\n");
 			scanf("%s", &newm);
 			editMeaning(num, word, newm);
+			printf("Jelentes modositva.\n\n");
 			break;
 		case 3:
 			printf("Melyik jelentest szeretned torolni? [1-2-3]\n");
@@ -426,6 +427,8 @@ void modifyWord(char word[WORDL]) {
 		case 4:
 			delete(word);
 			printf("Szo torolve.\n");
+			break;
+		case 5:
 			break;
 		default:
 			printf("Nem tudom hogy mire gondolsz :(\n");
@@ -534,7 +537,7 @@ int main() {
 		fclose(fp);
 	}
 	while (running) {
-		printf("  1-Beszuras\t2-Kereses\t3-Modositas\t4-Kilepes\n\t");
+		printf("  1: Beszuras\t2: Kereses\t3: Modositas\t4: Kilepes es mentes\n\t");
 		scanf("%d", &choice);
 		switch (choice) {
 		case 1:
@@ -543,12 +546,14 @@ int main() {
 			toLower(sajat);
 			toLower(idegen);
 			insert(sajat, idegen);
+			printf("Szo hozzaadva.\n");
 			break;
 		case 2:
 			printf("\nKeresendo szo [magyar]: ");
 			scanf("%s", &sajat);
 			toLower(sajat);
 			search(sajat);
+			printf("\n");
 			break;
 		case 3:
 			printf("\nModositando szo [magyar]: ");
@@ -563,7 +568,7 @@ int main() {
 			traversal(root);
 			break;
 		default:
-			printf("\nInvalid choice :/");
+			printf("\nNem tudom hogy mire gondolsz :/\n");
 			break;
 		}
 	}
