@@ -202,6 +202,7 @@ void traversal(DictNode* root) {
 		inorderTree(root);
 		printf("\nPostorder bejaras:\n");
 		postorderTree(root);
+		printf("\n");
 	}
 	else printf("\nA szotarad ures!\n");
 }
@@ -390,43 +391,45 @@ DictNode* delete(char word[WORDL]) {
 
 void modifyWord(char word[WORDL]) {
 	search(word);
-	printf("\n1: Uj jelentes hozzaadasa\n2: Jelentes modositasa\n3: Jelentes torlese\n4: Szo torlese\n");
-	int choice;
-	int num;
-	char newm[WORDL];
-	scanf("%d", &choice);
-	switch (choice) {
-	case 1:
-		printf("Ird ide az uj jelentest: ");
-		scanf("%s", &newm);
-		addMeaning(word, newm);
-		break;
-	case 2:
-		printf("Melyik jelentest szeretned modositani? [1-2-3]\n");
-		scanf("%d", &num);
-		if (num > 3) {
-			printf("Sajnos haromnal tobb jelentest nem tudok tarolni :(\n");
+	if (isinDict(word)) {
+		printf("\n1: Uj jelentes hozzaadasa\n2: Jelentes modositasa\n3: Jelentes torlese\n4: Szo torlese\n");
+		int choice;
+		int num;
+		char newm[WORDL];
+		scanf("%d", &choice);
+		switch (choice) {
+		case 1:
+			printf("Ird ide az uj jelentest: ");
+			scanf("%s", &newm);
+			addMeaning(word, newm);
 			break;
-		}
-		printf("Mi legyen az uj jelentes?\n");
-		scanf("%s", &newm);
-		editMeaning(num, word, newm);
-		break;
-	case 3:
-		printf("Melyik jelentest szeretned torolni? [1-2-3]\n");
-		scanf("%d", &num);
-		if (num > 3) {
-			printf("Sajnos haromnal tobb jelentest nem tudok tarolni :(\n");
+		case 2:
+			printf("Melyik jelentest szeretned modositani? [1-2-3]\n");
+			scanf("%d", &num);
+			if (num > 3) {
+				printf("Sajnos haromnal tobb jelentest nem tudok tarolni :(\n");
+				break;
+			}
+			printf("Mi legyen az uj jelentes?\n");
+			scanf("%s", &newm);
+			editMeaning(num, word, newm);
 			break;
+		case 3:
+			printf("Melyik jelentest szeretned torolni? [1-2-3]\n");
+			scanf("%d", &num);
+			if (num > 3) {
+				printf("Sajnos haromnal tobb jelentest nem tudok tarolni :(\n");
+				break;
+			}
+			editMeaning(num, word, "");
+			break;
+		case 4:
+			delete(word);
+			printf("Szo torolve.\n");
+			break;
+		default:
+			printf("Nem tudom hogy mire gondolsz :(\n");
 		}
-		editMeaning(num, word, "");
-		break;
-	case 4:
-		delete(word);
-		printf("Szo torolve.");
-		break;
-	default:
-		printf("Nem tudom hogy mire gondolsz :(");
 	}
 }
 int editMeaning(int nth, char word[WORDL], char newm[WORDL]) {
@@ -458,17 +461,21 @@ void preorderSave(DictNode* root, FILE* fp) {
 DictNode* preorderLoad(DictNode** root, FILE* fp) { // root = preorderLoad(root, fp);
 	if (root == NULL) { //ha semmi nem fogja a gyökeret
 		printf("KURVA NAGY HIBA TORTENIK EPPEN!");
-		return;
+		return NULL;
 	}
 	DictNode* temp = malloc(sizeof(DictNode));
-	fread(temp, sizeof(DictNode), 1, fp); //tempbe került minden;		helyes: color, sajatNyelv, idegenNyelv-ek;		helytelen: parent, left, right;
+	fread(temp, sizeof(DictNode), 1, fp); 
+	if (!(temp->color == 'b' || temp->color == 'r')) {
+		printf("\nHiba a szotar betoltese kozben!\n");
+		return NULL;
+	}
 	if (temp->left != NULL) {
-		temp->left->parent = temp;
 		temp->left = preorderLoad(temp->left, fp);
+		temp->left->parent = temp;
 	}
 	if (temp->right != NULL) {
-		temp->right->parent = temp;
 		temp->right = preorderLoad(temp->right, fp);
+		temp->right->parent = temp;
 	}
 	return temp;
 }
@@ -518,8 +525,16 @@ void toLower(char a[WORDL]) {
 int main() {
 	int choice, running = 1;
 	char sajat[WORDL] = "" , idegen[WORDL] = "";
+	FILE* fp = fopen("wordtree.dict", "rb");
+	if (fp != NULL) {
+		fseek(fp, 0, SEEK_END);
+		int size = ftell(fp);
+		fseek(fp, 0, SEEK_SET);
+		if (size > 0) root = preorderLoad(&root, fp);
+		fclose(fp);
+	}
 	while (running) {
-		printf("\t1-Beszuras\t2-Kereses\t3-Modositas\t4-Kilepes\n\t");
+		printf("  1-Beszuras\t2-Kereses\t3-Modositas\t4-Kilepes\n\t");
 		scanf("%d", &choice);
 		switch (choice) {
 		case 1:
@@ -552,7 +567,8 @@ int main() {
 			break;
 		}
 	}
-
-	//treeTest();
+	fp = fopen("wordtree.dict", "wb");
+	preorderSave(root, fp);
+	fclose(fp);
 	return 0;
 }
