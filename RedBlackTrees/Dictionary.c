@@ -61,11 +61,11 @@ void rotateLeft(DictNode* a) {
 
 	b = a->right;
 	a->right = b->left;
-	if (b->left != NULL) b->left->parent = a;
+	if (b->left) b->left->parent = a;
 	b->parent = a->parent;
 
-	if (a->parent == NULL) root = b;
-	else if ((a->parent->left != NULL) && isEqual(a->sajatNyelv, a->parent->left->sajatNyelv)) a->parent->left = b; //itt vizsgáljuk hogy a szülõjének õ melyik oldali gyereke
+	if (!(a->parent)) root = b;
+	else if ((a->parent->left) && isEqual(a->sajatNyelv, a->parent->left->sajatNyelv)) a->parent->left = b; //itt vizsgáljuk hogy a szülõjének õ melyik oldali gyereke
 	else a->parent->right = b;
 	b->left = a;
 	a->parent = b;
@@ -75,11 +75,11 @@ void rotateRight(DictNode* b) {
 
 	a = b->left;
 	b->left = a->right;
-	if (a->right != NULL) a->right->parent = b;
+	if (a->right) a->right->parent = b;
 	a->parent = b->parent;
 
-	if (b->parent == NULL) root = a;
-	else if ((b->parent->left != NULL) && isEqual(b->sajatNyelv, b->parent->left->sajatNyelv)) b->parent->left = a;
+	if (!(b->parent)) root = a;
+	else if ((b->parent->left) && isEqual(b->sajatNyelv, b->parent->left->sajatNyelv)) b->parent->left = a;
 	else b->parent->right = a;
 	a->right = b;
 	b->parent = a;
@@ -89,17 +89,17 @@ void colorInsert(DictNode* c) {
 	DictNode *b = NULL;
 
 
-	while ((c->parent != NULL) && (c->parent->color == 'r')) { //amíg van szülõ, és az piros
-		if ((c->parent->parent->left != NULL) && isEqual(c->parent->sajatNyelv, c->parent->parent->left->sajatNyelv)) { //ha balgyerek
-			if (c->parent->parent->right != NULL) b = c->parent->parent->right; 
-			if ((b != NULL) && (b->color == 'r')) {
+	while ((c->parent) && (c->parent->color == 'r')) { //amíg van szülõ, és az piros
+		if ((c->parent->parent->left) && isEqual(c->parent->sajatNyelv, c->parent->parent->left->sajatNyelv)) { //ha balgyerek
+			if (c->parent->parent->right) b = c->parent->parent->right; 
+			if ((b) && (b->color == 'r')) {
 				c->parent->color = 'b';
 				b->color = 'b';
 				c->parent->parent->color = 'r';
-				if (c->parent->parent != NULL) c = c->parent->parent;
+				if (c->parent->parent) c = c->parent->parent;
 			}
 			else {
-				if ((c->parent->right != NULL) && isEqual(c->sajatNyelv,c->parent->right->sajatNyelv)) {
+				if ((c->parent->right) && isEqual(c->sajatNyelv,c->parent->right->sajatNyelv)) {
 					c = c->parent;
 					rotateLeft(c);
 				}
@@ -109,15 +109,15 @@ void colorInsert(DictNode* c) {
 			}
 		}
 		else {
-			if (c->parent->parent->left != NULL) b = c->parent->parent->left;
-			if ((b != NULL) && (b->color == 'r')) {
+			if (c->parent->parent->left) b = c->parent->parent->left;
+			if ((b) && (b->color == 'r')) {
 				c->parent->color = 'b';
 				b->color = 'b';
 				c->parent->parent->color = 'r';
-				if (c->parent->parent != NULL) c = c->parent->parent;
+				if (c->parent->parent) c = c->parent->parent;
 			}
 			else {
-				if ((c->parent->left != NULL) && isEqual(c->sajatNyelv, c->parent->left->sajatNyelv)) {
+				if ((c->parent->left) && isEqual(c->sajatNyelv, c->parent->left->sajatNyelv)) {
 					c = c->parent;
 					rotateRight(c);
 				}
@@ -154,21 +154,21 @@ void insert(char newSajat[WORDL], char newIdegen[WORDL]) {
 		return;
 	}
 
-	if (root == NULL) {
+	if (!root) {
 		root = c;
 		root->color = 'b';
 		c->parent = NULL;
 		return;
 	}
 
-	while (a != NULL) {
+	while (a) {
 		b = a;
 		if (isLess(c->sajatNyelv, a->sajatNyelv)) a = a->left;
 		else a = a->right;
 	}
 
 	c->parent = b;
-	if (b == NULL) root = c;
+	if (!b) root = c;
 	else {
 		if (isLess(c->sajatNyelv, b->sajatNyelv)) b->left = c;
 		else b->right = c;
@@ -179,7 +179,7 @@ void insert(char newSajat[WORDL], char newIdegen[WORDL]) {
 void inorderTree(DictNode* root) {
 	DictNode* temp = root;
 
-	if (temp != NULL) {
+	if (temp) {
 		inorderTree(temp->left);
 		printf(" %s-%c ", temp->sajatNyelv, temp->color);
 		inorderTree(temp->right);
@@ -188,7 +188,7 @@ void inorderTree(DictNode* root) {
 void postorderTree(DictNode* root) {
 	DictNode* temp = root;
 
-	if (temp != NULL) {
+	if (temp) {
 		postorderTree(temp->left);
 		postorderTree(temp->right);
 		printf(" %s-%c ", temp->sajatNyelv, temp->color);
@@ -196,7 +196,7 @@ void postorderTree(DictNode* root) {
 }
 
 void traversal(DictNode* root) {
-	if (root != NULL) {
+	if (root) {
 		printf("A gyoker: %s-%c", root->sajatNyelv, root->color);
 		printf("\nInorder bejaras:\n");
 		inorderTree(root);
@@ -210,7 +210,7 @@ void traversal(DictNode* root) {
 int isinDict(char word[WORDL]){
 	DictNode* temp = root;
 
-	while (temp != NULL) {
+	while (temp) {
 		if (isEqual(temp->sajatNyelv,word)) return 1;
 		else {
 				if (isGreater(word, temp->sajatNyelv)) temp = temp->right;
@@ -234,7 +234,7 @@ int addMeaning(char sajat[WORDL], char idegen[WORDL]) {
 	DictNode* temp = root;
 
 	if (isinDict(sajat)) {
-		while (temp != NULL) {
+		while (temp) {
 			if (isEqual(temp->sajatNyelv, sajat)) break;
 			else {
 				if (isGreater(sajat, temp->sajatNyelv)) temp = temp->right;
@@ -292,27 +292,27 @@ DictNode* successor(DictNode *a){ //leszarmazott
 void colorDelete(DictNode *a) {
 	while (a != root && a->color == 'b') {
 		DictNode *d = NULL;
-		if ((a->parent->left != NULL) && (a == a->parent->left)) {
+		if ((a->parent->left) && (a == a->parent->left)) {
 			d = a->parent->right;
-			if ((d != NULL) && (d->color == 'r')) {
+			if ((d) && (d->color == 'r')) {
 				d->color = 'b';
 				a->parent->color = 'r';
 				rotateLeft(a->parent);
 				d = a->parent->right;
 			}
 
-			if ((d != NULL) && (d->right != NULL) && (d->left != NULL) && (d->left->color == 'b') && (d->right->color == 'b')) {
+			if ((d) && (d->right) && (d->left) && (d->left->color == 'b') && (d->right->color == 'b')) {
 				d->color = 'r';
 				a = a->parent;
 			}
-			else if ((d != NULL) && (d->right->color == 'b')) {
+			else if ((d) && (d->right->color == 'b')) {
 				d->left->color = 'b';
 				d->color = 'r';
 				rotateRight(d);
 				d = a->parent->right;
 			}
 
-			if (d != NULL) {
+			if (d) {
 				d->color = a->parent->color;
 				a->parent->color = 'b';
 				d->right->color = 'b';
@@ -321,31 +321,31 @@ void colorDelete(DictNode *a) {
 			}
 		}
 
-		else if (a->parent != NULL) {
+		else if (a->parent) {
 			d = a->parent->left;
-			if ((d != NULL) && (d->color == 'r')) {
+			if ((d) && (d->color == 'r')) {
 				d->color = 'b';
 				a->parent->color = 'r';
 				rotateLeft(a->parent);
-				if (a->parent != NULL) d = a->parent->left;
+				if (a->parent) d = a->parent->left;
 
 			}
 
-			if ((d != NULL) && (d->right != NULL) && (d->left != NULL) && (d->right->color == 'b') && (d->left->color == 'b')) a = a->parent;
-			else if ((d != NULL) && (d->right != NULL) && (d->left != NULL) && (d->left->color == 'b')) {
+			if ((d) && (d->right) && (d->left) && (d->right->color == 'b') && (d->left->color == 'b')) a = a->parent;
+			else if ((d) && (d->right) && (d->left) && (d->left->color == 'b')) {
 				d->right->color = 'b';
 				d->color = 'r';
 				rotateRight(d);
 				d = a->parent->left;
 			}
 
-			if (a->parent != NULL) {
+			if (a->parent) {
 				d->color = a->parent->color;
 				a->parent->color = 'b';
 			}
 
-			if (d->left != NULL) d->left->color = 'b';
-			if (a->parent != NULL) rotateLeft(a->parent);
+			if (d->left) d->left->color = 'b';
+			if (a->parent) rotateLeft(a->parent);
 			a = root;
 		}
 	}
@@ -356,25 +356,25 @@ DictNode* delete(char word[WORDL]) {
 	DictNode* b = NULL;
 	DictNode* c = root;
 
-	if ((c->left == NULL) && (c->right == NULL) && (isEqual(c->sajatNyelv, word))) {
+	if ((!(c->left)) && !(c->right) && (isEqual(c->sajatNyelv, word))) {
 		root = NULL;
 		free(c);
 		printf("A szotar kiurult.\n");
 		return;
 	}
 
-	while ((!isEqual(c->sajatNyelv, word)) && (c != NULL)) {
+	while ((!isEqual(c->sajatNyelv, word)) && (c)) {
 		if (isLess(word, c->sajatNyelv)) c = c->left;
 		else c = c->right;
-		if (c == NULL) return;
+		if (!c) return;
 	}
 
-	if ((c->left == NULL) || (c->right == NULL)) b = c;
+	if (!(c->left) || !(c->right)) b = c;
 	else b = successor(c);
-	if (b->left != NULL) a = b->left;
-	else if (b->right != NULL) a = b->right;
-	if ((a != NULL) && (b->parent != NULL)) a->parent = b->parent;
-	if ((b != NULL) && (a != NULL) && (b->parent == NULL)) root = a;
+	if (b->left) a = b->left;
+	else if (b->right) a = b->right;
+	if ((a) && (b->parent)) a->parent = b->parent;
+	if ((b) && (a) && !(b->parent)) root = a;
 	else if (b == b->parent->left) b->parent->left = a;
 	else b->parent->right = a;
 	if (b != c) {
@@ -385,7 +385,7 @@ DictNode* delete(char word[WORDL]) {
 			c->idegenNyelv3[i] = b->idegenNyelv3[i];
 		}
 	}
-	if ((b != NULL) && (a != NULL) && (b->color == 'b')) colorDelete(a);
+	if ((b) && (a) && (b->color == 'b')) colorDelete(a);
 	return b;
 }
 
@@ -456,13 +456,13 @@ int editMeaning(int nth, char word[WORDL], char newm[WORDL]) {
 }
 
 void preorderSave(DictNode* root, FILE* fp) {
-	if (root == NULL) return;
+	if (!root) return;
 	fwrite(root, sizeof(DictNode), 1, fp);
-	if (root->left != NULL) preorderSave(root->left, fp);
-	if (root->right != NULL) preorderSave(root->right, fp);
+	if (root->left) preorderSave(root->left, fp);
+	if (root->right) preorderSave(root->right, fp);
 }
 DictNode* preorderLoad(DictNode** root, FILE* fp) { // root = preorderLoad(root, fp);
-	if (root == NULL) { //ha semmi nem fogja a gyökeret
+	if (!root) { //ha semmi nem fogja a gyökeret  === (root == NULL)
 		printf("KURVA NAGY HIBA TORTENIK EPPEN!");
 		return NULL;
 	}
@@ -481,6 +481,15 @@ DictNode* preorderLoad(DictNode** root, FILE* fp) { // root = preorderLoad(root,
 		temp->right->parent = temp;
 	}
 	return temp;
+}
+
+void printToTxt(DictNode* root, FILE* fp) {
+	DictNode* temp = root;
+	if (temp) {
+		printToTxt(temp->left, fp);
+		fprintf(fp, "%s: %s, %s, %s\n", temp->sajatNyelv, temp->idegenNyelv1, temp->idegenNyelv2, temp->idegenNyelv3);
+		printToTxt(temp->right, fp);
+	}
 }
 
 void treeTest() {
@@ -529,7 +538,7 @@ int main() {
 	int choice, running = 1;
 	char sajat[WORDL] = "" , idegen[WORDL] = "";
 	FILE* fp = fopen("wordtree.dict", "rb");
-	if (fp != NULL) {
+	if (fp) {
 		fseek(fp, 0, SEEK_END);
 		int size = ftell(fp);
 		fseek(fp, 0, SEEK_SET);
@@ -537,7 +546,7 @@ int main() {
 		fclose(fp);
 	}
 	while (running) {
-		printf("  1: Beszuras\t2: Kereses\t3: Modositas\t4: Kilepes es mentes\n\t");
+		printf("  1: Beszuras   2: Kereses   3: Modositas   4: Kiiras   5: Kilepes es mentes\n\t");
 		scanf("%d", &choice);
 		switch (choice) {
 		case 1:
@@ -562,9 +571,15 @@ int main() {
 			modifyWord(sajat);
 			break;
 		case 4:
-			running = 0;
+			fp = fopen("szotar.txt", "wt");
+			if(fp) printToTxt(root, fp); //fp!=NULL
+			fclose(fp);
+			printf("Szotar sikeresen kiirva .txt fajlba.\n\n");
 			break;
 		case 5:
+			running = 0;
+			break;
+		case 6:
 			traversal(root);
 			break;
 		default:
