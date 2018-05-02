@@ -4,11 +4,6 @@
 #include <ctype.h> //tolower miatt
 #define WORDL 32
 
-/*TODO:
-- Beautify user interface (right and protocolar \n and \t usage);
-- Add save and load to menu;
-*/
-
 typedef struct DictNode {
 	char sajatNyelv[WORDL];
 	char idegenNyelv1[WORDL];
@@ -173,6 +168,7 @@ void insert(char newSajat[WORDL], char newIdegen[WORDL]) {
 		if (isLess(c->sajatNyelv, b->sajatNyelv)) b->left = c;
 		else b->right = c;
 	}
+	printf("Szo hozzaadva.\n\n");
 	colorInsert(c);
 }
 
@@ -226,7 +222,9 @@ void search(char word[WORDL]) {
 			if (isGreater(word, temp->sajatNyelv)) temp = temp->right;
 			if (isLess(word, temp->sajatNyelv)) temp = temp->left;
 		}
-		printf("%s: %s, %s, %s", temp->sajatNyelv, temp->idegenNyelv1, temp->idegenNyelv2, temp->idegenNyelv3);
+		printf("%s: %s", temp->sajatNyelv, temp->idegenNyelv1);
+		if (!isEmpty(temp->idegenNyelv2)) printf(", %s", temp->idegenNyelv2);
+		if (!isEmpty(temp->idegenNyelv3)) printf(", %s", temp->idegenNyelv3);
 	}
 	else printf("A keresett szo nincs a szotarban.\n");
 }
@@ -487,7 +485,10 @@ void printToTxt(DictNode* root, FILE* fp) {
 	DictNode* temp = root;
 	if (temp) {
 		printToTxt(temp->left, fp);
-		fprintf(fp, "%s: %s, %s, %s\n", temp->sajatNyelv, temp->idegenNyelv1, temp->idegenNyelv2, temp->idegenNyelv3);
+		fprintf(fp, "%s: %s", temp->sajatNyelv, temp->idegenNyelv1);
+		if (!isEmpty(temp->idegenNyelv2)) fprintf(fp, ", %s", temp->idegenNyelv2);
+		if (!isEmpty(temp->idegenNyelv3)) fprintf(fp, ", %s", temp->idegenNyelv3);
+		fprintf(fp, "\n");
 		printToTxt(temp->right, fp);
 	}
 }
@@ -555,7 +556,6 @@ int main() {
 			toLower(sajat);
 			toLower(idegen);
 			insert(sajat, idegen);
-			printf("Szo hozzaadva.\n");
 			break;
 		case 2:
 			printf("\nKeresendo szo [magyar]: ");
@@ -572,7 +572,7 @@ int main() {
 			break;
 		case 4:
 			fp = fopen("szotar.txt", "wt");
-			if(fp) printToTxt(root, fp); //fp!=NULL
+			if(fp) printToTxt(root, fp);
 			fclose(fp);
 			printf("Szotar sikeresen kiirva .txt fajlba.\n\n");
 			break;
@@ -583,7 +583,7 @@ int main() {
 			traversal(root);
 			break;
 		default:
-			printf("\nNem tudom hogy mire gondolsz :/\n");
+			printf("Nem tudom hogy mire gondolsz :/\n");
 			break;
 		}
 	}
