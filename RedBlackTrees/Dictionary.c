@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h> //tolower miatt
+#include <string.h>
 #define WORDL 32
 
 typedef struct DictNode {
@@ -16,24 +17,19 @@ typedef struct DictNode {
 DictNode* root = NULL;
 
 int isEqual(char a[WORDL], char b[WORDL]) {
-	for (int i = 0; i < WORDL; i++) {
-		if (a[i] != b[i]) return 0; //ha bármelyik betû nem egyezik, akkor hamis
-	}
-	return 1; //különben igaz
+	int r = strcmp(a, b);
+	if (!r) return 1;
+	else return 0;
 }
 int isGreater(char a[WORDL], char b[WORDL]) {
-	for (int i = 0; i < WORDL; i++) {
-		if (a[i] > b[i]) return 1;
-		if (a[i] < b[i]) return 0;
-	}
-	return 0; //különben hamis
+	int r = strcmp(a, b);
+	if (r > 0) return 1;
+	else return 0;
 }
 int isLess(char a[WORDL], char b[WORDL]) {
-	for (int i = 0; i < WORDL; i++) {
-		if (a[i] < b[i]) return 1;
-		if (a[i] > b[i]) return 0;
-	}
-	return 0;
+	int r = strcmp(a, b);
+	if (r < 0) return 1;
+	else return 0;
 }
 int isEmpty(char a[WORDL]) {
 	for (int i = 0; i < WORDL; i++) {
