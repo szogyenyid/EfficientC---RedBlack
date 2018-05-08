@@ -449,11 +449,12 @@ int editMeaning(int nth, char word[WORDL], char newm[WORDL]) {
 	}
 }
 
-void preorderSave(DictNode* root, FILE* fp) {
+void preorderSavenExit(DictNode* root, FILE* fp) {
 	if (!root) return;
 	fwrite(root, sizeof(DictNode), 1, fp);
-	if (root->left) preorderSave(root->left, fp);
-	if (root->right) preorderSave(root->right, fp);
+	if (root->left) preorderSavenExit(root->left, fp);
+	if (root->right) preorderSavenExit(root->right, fp);
+	free(root);
 }
 DictNode* preorderLoad(DictNode** root, FILE* fp) { // root = preorderLoad(root, fp);
 	if (!root) { //ha semmi nem fogja a gyökeret  === (root == NULL)
@@ -500,7 +501,7 @@ void treeTest() {
 	insert("lyuk", "hole");
 	traversal(root);
 	FILE* fp = fopen("wordtree.dict", "wb");
-	preorderSave(root, fp);
+	preorderSavenExit(root, fp);
 	fclose(fp);
 	delete("lyuk");
 	delete("kutya");
@@ -584,7 +585,7 @@ int main() {
 		}
 	}
 	fp = fopen("wordtree.dict", "wb");
-	preorderSave(root, fp);
+	preorderSavenExit(root, fp);
 	fclose(fp);
 	return 0;
 }
