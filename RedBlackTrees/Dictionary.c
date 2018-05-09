@@ -192,8 +192,8 @@ void traversal(DictNode* root) {
 		printf("A gyoker: %s-%c", root->sajatNyelv, root->color);
 		printf("\nInorder bejaras:\n");
 		inorderTree(root);
-		printf("\nPostorder bejaras:\n");
-		postorderTree(root);
+		//printf("\nPostorder bejaras:\n");
+		//postorderTree(root);
 		printf("\n");
 	}
 	else printf("\nA szotarad ures!\n");
@@ -458,7 +458,7 @@ void preorderSavenExit(DictNode* root, FILE* fp) {
 }
 DictNode* preorderLoad(DictNode** root, FILE* fp) { // root = preorderLoad(root, fp);
 	if (!root) { //ha semmi nem fogja a gyökeret  === (root == NULL)
-		printf("KURVA NAGY HIBA TORTENIK EPPEN!");
+		printf("MARHA NAGY HIBA TORTENIK EPPEN!");
 		return NULL;
 	}
 	DictNode* temp = malloc(sizeof(DictNode));
@@ -467,11 +467,11 @@ DictNode* preorderLoad(DictNode** root, FILE* fp) { // root = preorderLoad(root,
 		printf("\nHiba a szotar betoltese kozben!\n");
 		return NULL;
 	}
-	if (temp->left != NULL) {
+	if (temp->left) {
 		temp->left = preorderLoad(temp->left, fp);
 		temp->left->parent = temp;
 	}
-	if (temp->right != NULL) {
+	if (temp->right) {
 		temp->right = preorderLoad(temp->right, fp);
 		temp->right->parent = temp;
 	}
@@ -544,7 +544,7 @@ int main() {
 		fclose(fp);
 	}
 	while (running) {
-		printf("  1: Beszuras   2: Kereses   3: Modositas   4: Kiiras   5: Kilepes es mentes\n\t");
+		printf("\n  1: Beszuras   2: Kereses   3: Modositas   4: Kiiras   5: Kilepes es mentes\n\t");
 		scanf("%d", &choice);
 		switch (choice) {
 		case 1:
